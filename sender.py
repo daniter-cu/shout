@@ -1,4 +1,5 @@
 import socket
+import config
 
 class Sender():
 	def __init__(self):
@@ -7,5 +8,6 @@ class Sender():
  		self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 
- 	def send(msg):
-		sock.sendto(msg, (self.UDP_IP, self.UDP_PORT))
+ 	def send(self, msg):
+ 		print "trying to send message : ", msg
+		self.sock.sendto(msg, (config.UDP_BROADCAST_IP, config.UDP_PORT))
