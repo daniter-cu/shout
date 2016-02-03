@@ -1,13 +1,16 @@
 import socket
 import config
-
+import json
 
 class Sender():
-    def __init__(self):
+    def __init__(self, user_id):
+        self.user_id = user_id
         self.sock = socket.socket(socket.AF_INET,  # Internet
                                   socket.SOCK_DGRAM)  # UDP
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     def send(self, msg):
         print "trying to send message : ", msg
-        self.sock.sendto(msg, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+
+        json_str = json.dumps({"user_id": self.user_id, "msg": msg})
+        self.sock.sendto(json_str, (config.UDP_BROADCAST_IP, config.UDP_PORT))

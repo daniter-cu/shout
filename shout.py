@@ -1,31 +1,24 @@
 #!/bin/bash python
+from broadcast_type import *
 from listener import *
 from sender import *
 from sys import stdin
 import re
 import threading
 import time
+from uuid import getnode as get_mac
+import uuid
 
-
-class BroadcastType(object):
-    message 	= "msg:"
-    ping        = "ping:"
-    renameChat  = "room:"
-    renameUser  = "name:"
-    help        = "help"
-
-    def values(self):
-        return {value for key, value in self.__dict__ if not key.startswith('__') and not callable(key)}
 
 
 def get_messages(rec):
     while (True):
         in_msg = rec.get_message()
-        print in_msg
+        # print in_msg
 
 
-def send_message(sender, str):
-    sender.send(str.strip())
+def send_message(sender, message):
+    sender.send(message.strip())
 
 
 def rename_chat(sender, str):
@@ -43,12 +36,16 @@ ping:		 		 # Ping to discover if a room exists.
 rename: Hotel California 	 # Rename the chat room.
 name: Batman 			 # Change your name.
 help 				 # Display a list of commands.
-    """
+"""
 
 
 if __name__ == '__main__':
-    sender = Sender()
-    rec = Rec()
+    # http://stackoverflow.com/questions/159137/getting-mac-address
+    # user_id = get_mac()  # 48-bit number used to identify the user
+    user_id = str(uuid.uuid1())
+
+    sender = Sender(user_id)
+    rec = Rec(user_id)
 
     t = threading.Thread(target=get_messages, args=(rec,))
     t.setDaemon(True)
