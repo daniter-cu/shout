@@ -8,8 +8,6 @@ import threading
 import time
 from uuid import getnode as get_mac
 import uuid
-from subprocess import call, STDOUT
-import os
 
 
 
@@ -17,10 +15,6 @@ def get_messages(rec):
     while (True):
         in_msg = rec.get_message()
         # print in_msg
-
-def start_permisc_mode():
-    FNULL = open(os.devnull, 'w')
-    call(['tcpdump', '-Ii', 'en0'], stdout=FNULL, stderr=STDOUT)
 
 
 def send_message(sender, message):
@@ -57,13 +51,15 @@ if __name__ == '__main__':
     t.setDaemon(True)
     t.start()
 
-    t = threading.Thread(target=start_permisc_mode)
-    t.setDaemon(True)
-    t.start()
 
+    num = range(1,100)
+    i = 0
     while(True):
-        senderInput = stdin.readline()
-
+        #time.sleep(3)
+        senderInput = str(num[i])
+        i += 1
+        if i > 99:
+            time.sleep(30)
 
         # ToDo: I'd like to pull this directly from the BroadcastType object
         broadcastValues = "|".join(("msg:", "ping:", "room:", "name:", "help"))
