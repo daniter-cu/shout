@@ -3,8 +3,9 @@ import config
 import json
 
 class Rec():
-    def __init__(self, user_id):
+    def __init__(self, user_id, blockchain):
         self.user_id = user_id
+        self.blockchain = blockchain
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)

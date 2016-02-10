@@ -1,6 +1,6 @@
 #!/bin/bash python
-from broadcast_type import *
-from listener import *
+from block_type import *
+from receiver import *
 from sender import *
 from sys import stdin
 import re

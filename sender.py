@@ -3,8 +3,9 @@ import config
 import json
 
 class Sender():
-    def __init__(self, user_id):
+    def __init__(self, user_id, blockchain):
         self.user_id = user_id
+        self.blockchain = blockchain
         self.sock = socket.socket(socket.AF_INET,  # Internet
                                   socket.SOCK_DGRAM)  # UDP
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)

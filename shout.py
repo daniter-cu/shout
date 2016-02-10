@@ -1,6 +1,7 @@
 #!/bin/bash python
-from broadcast_type import *
-from listener import *
+from blockchain import *
+from block_type import *
+from receiver import *
 from sender import *
 from sys import stdin
 import re
@@ -50,8 +51,9 @@ if __name__ == '__main__':
     # user_id = get_mac()  # 48-bit number used to identify the user
     user_id = str(uuid.uuid1())
 
-    sender = Sender(user_id)
-    rec = Rec(user_id)
+    blockchain = Blockchain()
+    sender = Sender(user_id, blockchain)
+    rec = Rec(user_id, blockchain)
 
     t = threading.Thread(target=get_messages, args=(rec,))
     t.setDaemon(True)
@@ -66,9 +68,9 @@ if __name__ == '__main__':
 
 
         # ToDo: I'd like to pull this directly from the BroadcastType object
-        broadcastValues = "|".join(("msg:", "ping:", "room:", "name:", "help"))
+        blockTypes = "|".join(("msg:", "ping:", "room:", "name:", "help"))
 
-        p = re.compile("^({0})".format(broadcastValues))
+        p = re.compile("^({0})".format(blockTypes))
         match = re.search(p, senderInput)
 
         action = BroadcastType.message
