@@ -1,8 +1,9 @@
 import json
 
 class Heartbeat:
-    def __init__(self, last_block, proposed_block):
+    def __init__(self, user_id, last_block, proposed_block):
         self.items = []
+        self.user_id = user_id
         self.last_block = last_block
         self.proposed_block = proposed_block
 
@@ -18,6 +19,7 @@ class Heartbeat:
 
 
         return json.dumps({
+            "user_id": self.user_id,
             "prior_hash": prior_hash,
             "proposed_block": block_json,
         })

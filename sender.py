@@ -35,11 +35,13 @@ class Sender():
     def heartbeat(self):
         last_block = self.blockchain.peek()
         proposed_block = self.blockchain.proposedBlock
-        heartbeat = Heartbeat(last_block, proposed_block)
+        heartbeat = Heartbeat(self.user_id, last_block, proposed_block)
 
         json = heartbeat.to_json()
         print "Heartbeat: ", json
         self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
 
+        # TODO : This is recursive threading.  Doesn't seem like a good idea
         t = threading.Timer(self.heartbeat_interval, self.heartbeat)
+        t.setDaemon(True)
         t.start()
