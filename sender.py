@@ -1,6 +1,8 @@
 import socket
 import config
 import json
+from block import *
+from block_type import *
 
 class Sender():
     def __init__(self, user_id, blockchain):
@@ -11,7 +13,11 @@ class Sender():
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     def send(self, msg):
-        print "trying to send message : ", msg
+        print "Trying to send message : ", msg
 
-        json_str = json.dumps({"user_id": self.user_id, "msg": msg})
-        self.sock.sendto(json_str, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+        if self.blockchain.is_next_block_proposed():
+            print "Blockchain currently pending approval."
+        else:
+
+            block = Block(BlockType.message, self.user_id, self.blockchain.prior_hash(), msg)
+            self.sock.sendto(block.to_json, (config.UDP_BROADCAST_IP, config.UDP_PORT))

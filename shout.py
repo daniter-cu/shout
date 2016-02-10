@@ -73,19 +73,19 @@ if __name__ == '__main__':
         p = re.compile("^({0})".format(blockTypes))
         match = re.search(p, senderInput)
 
-        action = BroadcastType.message
+        action = BlockType.message
         if(match != None):
             action = match.group(0)
 
-        if action == BroadcastType.message:
+        if action == BlockType.message:
             send_message(sender, senderInput)
-        elif action == BroadcastType.ping:
-            sender.send(BroadcastType.ping)
-        elif action == BroadcastType.renameChat:
+        elif action == BlockType.ping:
+            sender.send(BlockType.ping)
+        elif action == BlockType.renameChat:
             rename_chat(sender, senderInput)
-        elif action == BroadcastType.renameUser:
+        elif action == BlockType.renameUser:
             rename_user(sender, senderInput)
-        elif action == BroadcastType.help:
+        elif action == BlockType.help:
             display_help()
         else:
             send_message(sender, senderInput)

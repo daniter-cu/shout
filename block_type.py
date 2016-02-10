@@ -1,4 +1,4 @@
-class BroadcastType(object):
+class BlockType(object):
     message 	= "msg:"
     ping        = "ping:"
     renameChat  = "room:"
