@@ -3,7 +3,8 @@ import config
 import json
 
 class Rec():
-    def __init__(self, user_id, blockchain):
+    def __init__(self, user_id, blockchain, peers_list):
+        self.peers_list = peers_list
         self.user_id = user_id
         self.blockchain = blockchain
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,6 +25,8 @@ class Rec():
         print obj
 
         if "user_id" in obj and obj["user_id"] != self.user_id:
-            print "received message:", obj["msg"], " from :", obj["user_id"], " address: ", address
+            #print "received message:", obj["msg"], " from :", obj["user_id"], " address: ", address
+            self.peers_list.add_peer(obj["user_id"])
+            print self.peers_list.peers
 
 

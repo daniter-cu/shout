@@ -3,6 +3,7 @@ from blockchain import *
 from block_type import *
 from receiver import *
 from sender import *
+from peers import *
 from sys import stdin
 import re
 import threading
@@ -52,8 +53,9 @@ if __name__ == '__main__':
     user_id = str(uuid.uuid1())
 
     blockchain = Blockchain()
+    peers_list = Peers()
     sender = Sender(user_id, blockchain)
-    rec = Rec(user_id, blockchain)
+    rec = Rec(user_id, blockchain, peers_list)
 
     t = threading.Thread(target=get_messages, args=(rec,))
     t.setDaemon(True)
