@@ -14,7 +14,7 @@ class Heartbeat:
 
         block_json = ""
         if self.proposed_block is not None:
-            block_json = self.proposed_block.to_json()
+            block_json = json.loads(self.proposed_block.to_json())
 
 
         return json.dumps({
