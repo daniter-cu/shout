@@ -8,11 +8,11 @@ class Heartbeat:
 
     def to_json(self):
 
-        prior_hash = "null"
+        prior_hash = ""
         if self.last_block is not None:
             prior_hash = self.last_block.hash()
 
-        block_json = "null"
+        block_json = ""
         if self.proposed_block is not None:
             block_json = self.proposed_block.to_json()
 

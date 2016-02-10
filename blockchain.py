@@ -7,7 +7,7 @@ class Blockchain:
     # reach consensus again.
 
     def propose_block(self, block):
-        if self.proposedBlock is None:
+        if self.proposedBlock is not None:
             print "Error: Tried to propose a second block"
         else:
             self.proposedBlock = block
@@ -25,6 +25,8 @@ class Blockchain:
         return self.items.pop()
 
     def peek(self):
+        if self.is_empty:
+            return None
         return self.items[len(self.items)-1]
 
     def size(self):
