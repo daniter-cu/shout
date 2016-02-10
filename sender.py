@@ -3,6 +3,7 @@ import config
 import json
 from block import *
 from block_type import *
+from heartbeat import *
 
 class Sender():
     def __init__(self, user_id, blockchain):
@@ -19,5 +20,16 @@ class Sender():
             print "Blockchain currently pending approval."
         else:
 
-            block = Block(BlockType.message, self.user_id, self.blockchain.prior_hash(), msg)
-            self.sock.sendto(block.to_json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+            last_hash = ""
+            if not self.blockchain.is_empty():
+                last_hash = self.blockchain.peek().hash()
+
+            block = Block(BlockType.message, self.user_id, last_hash, msg)
+            self.blockchain.propose_block(block)
+
+    def heartbeat(self):
+        last_block = self.blockchain.peek()
+        proposed_block = self.blockchain.proposedBlock
+        heartbeat = Heartbeat(last_block, proposed_block)
+
+        self.sock.sendto(heartbeat.to_json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
