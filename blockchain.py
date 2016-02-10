@@ -18,14 +18,14 @@ class Blockchain:
     def is_empty(self):
         return self.items == []
 
-    def __push(self, item):
+    def push(self, item):
         self.items.append(item)
 
     def __pop(self):
         return self.items.pop()
 
     def peek(self):
-        if self.is_empty:
+        if self.is_empty():
             return None
         return self.items[len(self.items)-1]
 

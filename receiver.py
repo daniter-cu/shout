@@ -1,6 +1,7 @@
 import socket
 import config
 import json
+from block import *
 
 class Rec():
     def __init__(self, user_id, blockchain, peers_list):
@@ -26,7 +27,21 @@ class Rec():
 
         if "user_id" in obj and obj["user_id"] != self.user_id:
             #print "received message:", obj["msg"], " from :", obj["user_id"], " address: ", address
-            self.peers_list.add_peer(obj["user_id"])
-            print self.peers_list.peers
-
+            if obj["proposed_block"]:
+                # TODO : put this into block class
+                pb = obj["proposed_block"]
+                block = Block(pb["block_type"], pb["creator_id"], pb["prior_hash"], pb["payload"], pb["salt"])
+                self.peers_list.add_peer(obj["user_id"], block)
+            else: # this is the vanilla heartbeat case
+                self.peers_list.add_peer(obj["user_id"])
+            #self.peers_list.peers
+            #TODO : purge peers
+        prev_block = self.blockchain.peek()
+        if prev_block:
+            prev_hash = prev_block.hash()
+        else:
+            prev_hash = None
+        block = self.peers_list.get_consensus(prev_hash)
+        if block:
+            self.blockchain.push(block)
 
