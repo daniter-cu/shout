@@ -2,9 +2,13 @@ import socket
 import config
 import json
 from block import *
+import logging
+
+logger = logging.getLogger()
 
 class Rec():
-    def __init__(self, user_id, blockchain, peers_list):
+    def __init__(self, user_id, blockchain, peers_list, client):
+        self.client = client
         self.peers_list = peers_list
         self.user_id = user_id
         self.blockchain = blockchain
@@ -24,6 +28,8 @@ class Rec():
             return
         
         # print obj
+        logger.info("%s - Recieved: %s" % (self.user_id, data))
+
 
         if "user_id" in obj and obj["user_id"] != self.user_id:
             #print "received message:", obj["msg"], " from :", obj["user_id"], " address: ", address
@@ -43,5 +49,6 @@ class Rec():
             prev_hash = None
         block = self.peers_list.get_consensus(prev_hash)
         if block:
-            self.blockchain.push(block)
+            self.blockchain.accept_proposed_block(block)
+            self.client.print_text(block.creator_id + ":" + block.payload)
 

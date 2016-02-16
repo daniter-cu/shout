@@ -13,6 +13,8 @@ import uuid
 from subprocess import call, STDOUT
 import os
 from client import *
+import logging
+
 
 
 def get_messages(rec):
@@ -39,6 +41,8 @@ help 				 # Display a list of commands.
 if __name__ == '__main__':
     # http://stackoverflow.com/questions/159137/getting-mac-address
     # user_id = get_mac()  # 48-bit number used to identify the user
+    logging.basicConfig(filename='shout.log', level=logging.INFO)
+
     user_id = str(uuid.uuid1())
 
     blockchain = Blockchain()
@@ -47,7 +51,7 @@ if __name__ == '__main__':
     sender = Sender(user_id, blockchain)
 
     client = ClientWindow(sender)
-    rec = Rec(user_id, blockchain, peers_list)
+    rec = Rec(user_id, blockchain, peers_list, client)
 
     t = threading.Thread(target=get_messages, args=(rec,))
     t.setDaemon(True)

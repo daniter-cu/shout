@@ -10,13 +10,19 @@ class Blockchain:
         else:
             self.proposedBlock = block
 
+    def accept_proposed_block(self, block):
+        # Note that you might be compeled to just use the self.proposedBlock
+        # but htis is not always the correct block
+        self.__push(block)
+        self.proposedBlock = None
+
     def is_next_block_proposed(self):
         return self.proposedBlock is not None
 
     def is_empty(self):
         return self.items == []
 
-    def push(self, item):
+    def __push(self, item):
         self.items.append(item)
 
     def __pop(self):
