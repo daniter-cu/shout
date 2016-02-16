@@ -23,7 +23,7 @@ class Rec():
         except:
             return
         
-        print obj
+        # print obj
 
         if "user_id" in obj and obj["user_id"] != self.user_id:
             #print "received message:", obj["msg"], " from :", obj["user_id"], " address: ", address

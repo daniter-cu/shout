@@ -3,8 +3,6 @@ class Blockchain:
         self.items = []
         self.proposedBlock = None
 
-    # TODO: This might need to remember hashes that failed so it doesn't pick up an old hash from stragglers and try to
-    # reach consensus again.
 
     def propose_block(self, block):
         if self.proposedBlock is not None:

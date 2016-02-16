@@ -20,7 +20,7 @@ class Sender():
 
 
     def send(self, msg):
-        print "Trying to send message: ", msg
+        # print "Trying to send message: ", msg
 
         if self.blockchain.is_next_block_proposed():
             print "Unable to send, blockchain currently pending approval."
@@ -38,7 +38,7 @@ class Sender():
         heartbeat = Heartbeat(self.user_id, last_block, proposed_block)
 
         json = heartbeat.to_json()
-        print "Heartbeat: ", json
+        # print "Heartbeat: ", json
         self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
 
         # TODO : This is recursive threading.  Doesn't seem like a good idea

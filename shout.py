@@ -12,7 +12,7 @@ from uuid import getnode as get_mac
 import uuid
 from subprocess import call, STDOUT
 import os
-
+from client import *
 
 
 def get_messages(rec):
@@ -24,17 +24,6 @@ def start_permisc_mode():
     FNULL = open(os.devnull, 'w')
     call(['tcpdump', '-Ii', 'en0'], stdout=FNULL, stderr=STDOUT)
 
-
-def send_message(sender, message):
-    sender.send(message.strip())
-
-
-def rename_chat(sender, str):
-    sender.send("Rename chat")
-
-
-def rename_user(sender, str):
-    sender.send("Rename user")
 
 
 def display_help():
@@ -54,7 +43,10 @@ if __name__ == '__main__':
 
     blockchain = Blockchain()
     peers_list = Peers()
+
     sender = Sender(user_id, blockchain)
+
+    client = ClientWindow(sender)
     rec = Rec(user_id, blockchain, peers_list)
 
     t = threading.Thread(target=get_messages, args=(rec,))
@@ -65,30 +57,32 @@ if __name__ == '__main__':
     t.setDaemon(True)
     t.start()
 
-    while(True):
-        senderInput = stdin.readline()
+    client.start()
 
-
-        # ToDo: I'd like to pull this directly from the BroadcastType object
-        blockTypes = "|".join(("msg:", "ping:", "room:", "name:", "help"))
-
-        p = re.compile("^({0})".format(blockTypes))
-        match = re.search(p, senderInput)
-
-        action = BlockType.message
-        if(match != None):
-            action = match.group(0)
-
-        if action == BlockType.message:
-            send_message(sender, senderInput)
-        elif action == BlockType.ping:
-            sender.send(BlockType.ping)
-        elif action == BlockType.renameChat:
-            rename_chat(sender, senderInput)
-        elif action == BlockType.renameUser:
-            rename_user(sender, senderInput)
-        elif action == BlockType.help:
-            display_help()
-        else:
-            send_message(sender, senderInput)
+    # while(True):
+    #     senderInput = stdin.readline()
+    #
+    #
+    #     # ToDo: I'd like to pull this directly from the BroadcastType object
+    #     blockTypes = "|".join(("msg:", "ping:", "room:", "name:", "help"))
+    #
+    #     p = re.compile("^({0})".format(blockTypes))
+    #     match = re.search(p, senderInput)
+    #
+    #     action = BlockType.message
+    #     if(match != None):
+    #         action = match.group(0)
+    #
+    #     if action == BlockType.message:
+    #         send_message(sender, senderInput)
+    #     elif action == BlockType.ping:
+    #         sender.send(BlockType.ping)
+    #     elif action == BlockType.renameChat:
+    #         rename_chat(sender, senderInput)
+    #     elif action == BlockType.renameUser:
+    #         rename_user(sender, senderInput)
+    #     elif action == BlockType.help:
+    #         display_help()
+    #     else:
+    #         send_message(sender, senderInput)
 
