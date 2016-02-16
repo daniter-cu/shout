@@ -1,4 +1,5 @@
 import json
+from block_type import *
 
 class Heartbeat:
     def __init__(self, user_id, last_block, proposed_block):
@@ -19,6 +20,7 @@ class Heartbeat:
 
 
         return json.dumps({
+            "block_type": BlockType.heartbeat,
             "user_id": self.user_id,
             "prior_hash": prior_hash,
             "proposed_block": block_json,

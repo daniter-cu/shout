@@ -14,7 +14,7 @@ class Block():
     def to_json(self):
         return json.dumps({
             "block_type": self.block_type,
-            "creator_id": self.creator_id,
+            "user_id": self.creator_id,
             "prior_hash": self.prior_hash,
             "payload": self.payload,
             "salt": self.salt

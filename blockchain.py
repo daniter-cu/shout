@@ -5,16 +5,13 @@ class Blockchain:
 
 
     def propose_block(self, block):
-        if self.proposedBlock is not None:
-            print "Error: Tried to propose a second block"
-        else:
-            self.proposedBlock = block
+        self.proposedBlock = block
 
     def accept_proposed_block(self, block):
         # Note that you might be compeled to just use the self.proposedBlock
         # but htis is not always the correct block
         self.__push(block)
-        self.proposedBlock = None
+        #self.proposedBlock = None
 
     def is_next_block_proposed(self):
         return self.proposedBlock is not None

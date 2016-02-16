@@ -24,18 +24,16 @@ class Sender():
 
     def send(self, msg):
         # print "Trying to send message: ", msg
-        if self.blockchain.is_next_block_proposed():
-            print "Unable to send, blockchain currently pending approval."
-        else:
-            last_hash = ""
-            if not self.blockchain.is_empty():
-                last_hash = self.blockchain.peek().hash()
+        last_hash = ""
+        if not self.blockchain.is_empty():
+            last_hash = self.blockchain.peek().hash()
 
-            block = Block(BlockType.message, self.user_id, last_hash, msg)
-            self.blockchain.propose_block(block)
+        block = Block(BlockType.message, self.user_id, last_hash, msg)
+        self.blockchain.propose_block(block)
 
-            json = block.to_json()
-            self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+        json = block.to_json()
+        logger.info("Sending: "+ json)
+        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
 
     def heartbeat(self):
         last_block = self.blockchain.peek()
@@ -43,10 +41,10 @@ class Sender():
         heartbeat = Heartbeat(self.user_id, last_block, proposed_block)
 
         json = heartbeat.to_json()
-        # print "Heartbeat: ", json
         self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
 
-        # TODO : This is recursive threading.  Doesn't seem like a good idea
+        # TODO : Since we never join on these what happens to the object?
+        # Is there a memory leak here?
         t = threading.Timer(self.heartbeat_interval, self.heartbeat)
         t.setDaemon(True)
         t.start()
