@@ -215,6 +215,7 @@ class ClientWindow(object):
         walker.append(urwid.Text((format, text)))
 
         walker.set_focus(len(walker) - 1)
+        self.draw_interface()
 
 # Signal handlers
 
