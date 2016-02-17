@@ -17,7 +17,7 @@ class Sender():
                                   socket.SOCK_DGRAM)  # UDP
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        self.heartbeat_interval = 3
+        self.heartbeat_interval = 1
         self.heartbeat()
 
 
