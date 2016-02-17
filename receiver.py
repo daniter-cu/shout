@@ -8,11 +8,12 @@ from block_type import *
 logger = logging.getLogger()
 
 class Rec():
-    def __init__(self, user_id, blockchain, peers_list, client):
+    def __init__(self, user_id, blockchain, peers_list, client, sender):
         self.client = client
         self.peers_list = peers_list
         self.user_id = user_id
         self.blockchain = blockchain
+        self.sender = sender
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
@@ -40,14 +41,21 @@ class Rec():
                     self.peers_list.add_peer(obj["user_id"])
             if obj["block_type"] == BlockType.message:
                 # TODO : Don't over write if you're waiting for a message to get accepted
-                logger.info("%s - Recieved MESSAGE: %s" % (self.user_id, data))
-                last_hash = None
-                if not self.blockchain.is_empty():
-                    last_hash = self.blockchain.peek().hash()
+                if self.blockchain.proposal_allowed():
+                    logger.info("%s - Recieved MESSAGE: %s" % (self.user_id, data))
+                    last_hash = None
+                    if not self.blockchain.is_empty():
+                        last_hash = self.blockchain.peek().hash()
 
-                if not last_hash or last_hash == obj["prior_hash"]:
-                    block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"], obj["salt"])
-                    self.blockchain.propose_block(block)            
+                    if not last_hash or last_hash == obj["prior_hash"]:
+                        block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"], obj["salt"])
+                        self.blockchain.propose_block(block)    
+            if obj["block_type"] == BlockType.query:
+                # This is the catch up being requested
+                self.sender.sendQueryResult(self.blockchain.query(obj["payload"]["hash"], obj["payload"]["count"]))
+
+            if obj["block_type"] == BlockType.query_res:
+                self.blockchain.update(obj["payload"])
 
         self.test_consensus()
 

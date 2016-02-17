@@ -1,4 +1,7 @@
 from time import time
+import logging
+
+logger = logging.getLogger()
 
 class Blockchain:
     def __init__(self):
@@ -44,3 +47,32 @@ class Blockchain:
 
     def size(self):
         return len(self.items)
+
+    def query(self, hash, count):
+        index = None
+        for i, item in enumerate(self.items):
+            if item.hash() == hash:
+                index = i
+                break
+        if index == None:
+            return None
+        else:
+            if count > 0:
+                return self.items[i, i+count]
+            else:
+                return self.items[i+count, i]
+
+    def update(self, chain):
+        if chain[0].prior_hash != self.items.peek().hash:
+            logger.error("Update failed with non matching hashes")
+        else:
+            self.items.extend(chain)
+
+
+
+
+
+
+
+
+

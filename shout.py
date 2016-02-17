@@ -46,12 +46,12 @@ if __name__ == '__main__':
     user_id = str(uuid.uuid1())
 
     blockchain = Blockchain()
-    peers_list = Peers()
+
 
     sender = Sender(user_id, blockchain)
-
+    peers_list = Peers(sender)
     client = ClientWindow(sender)
-    rec = Rec(user_id, blockchain, peers_list, client)
+    rec = Rec(user_id, blockchain, peers_list, client, sender)
 
     t = threading.Thread(target=get_messages, args=(rec,))
     t.setDaemon(True)

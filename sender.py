@@ -48,3 +48,14 @@ class Sender():
         t = threading.Timer(self.heartbeat_interval, self.heartbeat)
         t.setDaemon(True)
         t.start()
+
+    def sendQuery(self, hash, count):
+        payload = {"hash": hash, "count":count}
+        block = Block(BlockType.query, self.user_id, None, payload)
+        json = block.to_json()
+        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+
+    def sendQueryResult(self, res):
+        block = Block(BlockType.query_res, self.user_id, None, res)
+        json = block.to_json()
+        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))

@@ -1,9 +1,10 @@
 from time import time
 
 class Peers():
-    def __init__(self):
+    def __init__(self, sender):
         # this is a dict of [peer_id] = timestamp
         self.peers = {}
+        self.sender = sender
 
     def has_peer(self, peer_id):
         return peer_id in self.peers
@@ -23,7 +24,7 @@ class Peers():
         c = {}
         full_set = {}
         for peer, (_, block) in self.peers.items():
-            if block and (block.prior_hash == current_hash or current_hash == None):
+            if block:
                 h = block.hash()
                 full_set[h] = block
                 if h in c:
@@ -33,7 +34,13 @@ class Peers():
 
         for h, count in c.items():
             if count > self.size()/2:
-                return full_set[h]
+                block = full_set[h]
+                if block.hash() == current_hash:
+                    return None
+                if block.prior_hash == current_hash or current_hash == None:
+                    return block
+                else:
+                    self.sender.sendQuery(current_hash, 1)
 
         return None
 
