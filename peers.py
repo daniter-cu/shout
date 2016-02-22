@@ -16,7 +16,7 @@ class Peers():
         self.peers[peer_id] = (time(), block)
 
     def purge_peers(self):
-        for peer, timestamp, block in self.peers.items():
+        for peer, (timestamp, block) in self.peers.items():
             if time() - timestamp > 3:
                 del self.peers[peer]
 

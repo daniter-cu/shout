@@ -63,6 +63,7 @@ class Rec():
 
     def test_consensus(self):
         #TODO : purge peers
+        self.peers_list.purge_peers()
         prev_block = self.blockchain.peek()
         if prev_block:
             prev_hash = prev_block.hash()
