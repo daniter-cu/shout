@@ -1,6 +1,8 @@
 from time import time
 import logging
 import threading
+from block_type import *
+from block      import *
 
 logger = logging.getLogger()
 
@@ -10,6 +12,9 @@ class Blockchain:
         self.proposedBlock = None
         self.timestamp = time()
         self.proposed_timeout = 2
+
+        # push an empty block so the blockchain is never empty
+        self.__push(Block(BlockType.empty, "", "", ""))
 
     def proposal_allowed(self):
         return self.proposedBlock is None
@@ -24,8 +29,8 @@ class Blockchain:
         self.proposedBlock = None
 
     def accept_proposed_block(self, block):
-        # Note that you might be compeled to just use the self.proposedBlock
-        # but htis is not always the correct block
+        # Note that you might be compelled to just use the self.proposedBlock
+        # but this is not always the correct block
         self.__push(block)
 
         #self.proposedBlock = None
@@ -43,9 +48,7 @@ class Blockchain:
         return self.items.pop()
 
     def peek(self):
-        if self.is_empty():
-            return None
-        return self.items[len(self.items)-1]
+        return self.items[self.size()-1]
 
     def size(self):
         return len(self.items)
