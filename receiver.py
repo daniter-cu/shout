@@ -29,7 +29,7 @@ class Rec():
         except:
             return
         
-        if "user_id" in obj and obj["user_id"] != self.user_id:
+        if "user_id" in obj :
             if obj["block_type"] == BlockType.heartbeat:
                 logger.info("%s - Recieved HEARTBEAT: %s" % (self.user_id, data))
                 if obj["proposed_block"]:
@@ -39,7 +39,7 @@ class Rec():
                     self.peers_list.add_peer(obj["user_id"], block)
                 else: # this is the vanilla heartbeat case
                     self.peers_list.add_peer(obj["user_id"])
-            if obj["block_type"] == BlockType.message:
+            if obj["block_type"] == BlockType.message and obj["user_id"] != self.user_id :
                 # TODO : Don't over write if you're waiting for a message to get accepted
                 if self.blockchain.proposal_allowed():
                     logger.info("%s - Recieved MESSAGE: %s" % (self.user_id, data))

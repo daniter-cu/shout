@@ -1,5 +1,6 @@
 from time import time
 import logging
+import threading
 
 logger = logging.getLogger()
 
@@ -8,18 +9,19 @@ class Blockchain:
         self.items = []
         self.proposedBlock = None
         self.timestamp = time()
+        self.proposed_timeout = 2
 
     def proposal_allowed(self):
-        if self.proposedBlock is None:
-            return True # no proposed block
-        if not self.is_empty() and self.proposedBlock.hash() == self.peek().hash():
-            return True # accepted block
-        if time() - self.timestamp > 3: # 3 second timeout
-            return True
-        return False
+        return self.proposedBlock is None
 
     def propose_block(self, block):
         self.proposedBlock = block
+        t = threading.Timer(self.proposed_timeout, self.clear_proposed)
+        t.setDaemon(True)
+        t.start()
+
+    def clear_proposed(self):
+        self.proposedBlock = None
 
     def accept_proposed_block(self, block):
         # Note that you might be compeled to just use the self.proposedBlock
@@ -70,8 +72,15 @@ class Blockchain:
 
     def __str__(self):
         chain =  "~".join([item.to_json() for item in self.items])
-        chain += "->" + self.proposedBlock.to_json()
+        if self.proposedBlock:
+            chain += "->" + self.proposedBlock.to_json()
         return chain
+
+    def contains(self, hash):
+        for item in self.items:
+            if hash == item.hash():
+                return True
+        return False
 
 
 
