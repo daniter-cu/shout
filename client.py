@@ -159,6 +159,7 @@ class ClientWindow(object):
             self.footer.set_edit_text(" "*len(text))
             self.footer.set_edit_text("")
 
+
             p = re.compile(ur'^name:(.+)')
             match = re.search(p, text)
             if(match != None):
@@ -167,7 +168,8 @@ class ClientWindow(object):
                 self.print_text("Changed your name to: " + name, "warning_text")
             else:
                 self.print_text(text, "pending_text")
-                self.sender.send(text)
+                self.msgq.add_message(text)
+
 
 
 
