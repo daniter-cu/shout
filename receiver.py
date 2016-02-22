@@ -35,7 +35,7 @@ class Rec():
                 if obj["proposed_block"]:
                     # TODO : put this into block class
                     pb = obj["proposed_block"]
-                    block = Block(pb["block_type"], pb["user_id"], pb["prior_hash"], pb["payload"], pb["salt"])
+                    block = Block(pb["block_type"], pb["user_id"], pb["prior_hash"], pb["payload"])
                     self.peers_list.add_peer(obj["user_id"], block)
                 else: # this is the vanilla heartbeat case
                     self.peers_list.add_peer(obj["user_id"])
@@ -48,7 +48,7 @@ class Rec():
                         last_hash = self.blockchain.peek().hash()
 
                     if not last_hash or last_hash == obj["prior_hash"]:
-                        block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"], obj["salt"])
+                        block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"])
                         self.blockchain.propose_block(block)    
             if obj["block_type"] == BlockType.query:
                 # This is the catch up being requested
