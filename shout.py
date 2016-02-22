@@ -14,6 +14,7 @@ from subprocess import call, STDOUT
 import os
 from client import *
 import logging
+from msgq import *
 
 
 
@@ -47,11 +48,15 @@ if __name__ == '__main__':
 
     blockchain = Blockchain()
 
-
     sender = Sender(user_id, blockchain)
     peers_list = Peers(sender)
-    client = ClientWindow(sender, blockchain, peers_list)
+    msgq = MessageQueue(blockchain, sender, user_id)
+    client = ClientWindow(blockchain, peers_list, msgq)
     rec = Rec(user_id, blockchain, peers_list, client, sender)
+
+    t = threading.Thread(target=msgq.consume)
+    t.setDaemon(True)
+    t.start()
 
     t = threading.Thread(target=get_messages, args=(rec,))
     t.setDaemon(True)

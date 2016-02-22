@@ -39,11 +39,11 @@ class ClientWindow(object):
             _palette.append((type + name, color, bg))
 
 
-    def __init__(self, sender, block_chain, peers):
+    def __init__(self, block_chain, peers, msgq):
         self.shall_quit = False
-        self.sender = sender
         self.block_chain = block_chain
         self.peers = peers
+        self.msgq = msgq
 
 
     def start(self):
@@ -168,6 +168,7 @@ class ClientWindow(object):
             else:
                 self.print_text(text, "pending_text")
                 self.sender.send(text)
+
 
 
 
