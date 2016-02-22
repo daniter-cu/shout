@@ -164,7 +164,7 @@ class ClientWindow(object):
             match = re.search(p, text)
             if(match != None):
                 name = match.group(1).strip()
-                self.sender.user_id = name
+                self.msgq.user_id = name
                 self.print_text("Changed your name to: " + name, "warning_text")
             else:
                 self.print_text(text, "pending_text")
