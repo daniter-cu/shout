@@ -31,7 +31,7 @@ class Rec():
         
         if "user_id" in obj :
             if obj["block_type"] == BlockType.heartbeat:
-                logger.info("%s - Recieved HEARTBEAT: %s" % (self.user_id, data))
+                #logger.info("%s - Recieved HEARTBEAT: %s" % (self.user_id, data))
                 if obj["proposed_block"]:
                     # TODO : put this into block class
                     pb = obj["proposed_block"]
@@ -63,6 +63,7 @@ class Rec():
 
     def test_consensus(self):
         #TODO : purge peers
+        self.peers_list.purge_peers()
         prev_block = self.blockchain.peek()
         if prev_block:
             prev_hash = prev_block.hash()

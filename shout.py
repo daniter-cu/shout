@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     sender = Sender(user_id, blockchain)
     peers_list = Peers(sender)
-    client = ClientWindow(sender, blockchain)
+    client = ClientWindow(sender, blockchain, peers_list)
     rec = Rec(user_id, blockchain, peers_list, client, sender)
 
     t = threading.Thread(target=get_messages, args=(rec,))
