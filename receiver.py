@@ -31,7 +31,7 @@ class Rec():
         
         if "user_id" in obj :
             if obj["block_type"] == BlockType.heartbeat:
-                logger.info("%s - Recieved HEARTBEAT: %s" % (self.user_id, data))
+                #logger.info("%s - Recieved HEARTBEAT: %s" % (self.user_id, data))
                 if obj["proposed_block"]:
                     # TODO : put this into block class
                     pb = obj["proposed_block"]

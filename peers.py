@@ -6,6 +6,9 @@ class Peers():
         self.peers = {}
         self.sender = sender
 
+    def __str__(self):
+        return str(self.peers)
+
     def has_peer(self, peer_id):
         return peer_id in self.peers
 

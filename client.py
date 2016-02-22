@@ -38,10 +38,11 @@ class ClientWindow(object):
             _palette.append((type + name, color, bg))
 
 
-    def __init__(self, sender, block_chain):
+    def __init__(self, sender, block_chain, peers):
         self.shall_quit = False
         self.sender = sender
         self.block_chain = block_chain
+        self.peers = peers
 
 
     def start(self):
@@ -173,6 +174,10 @@ class ClientWindow(object):
 
         elif key == "ctrl b":
             self.print_text(str(self.block_chain), "confirmed_text")
+
+        elif key == "ctrl p":
+            self.print_text(str(self.peers), "confirmed_text")
+
 
         elif key == "down":
             w = self.generic_output_walker
