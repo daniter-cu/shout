@@ -3,6 +3,7 @@
 import urwid
 import sys
 import extends
+import re
 from extends import *
 from urwid import MetaSignals
 
@@ -158,8 +159,15 @@ class ClientWindow(object):
             self.footer.set_edit_text(" "*len(text))
             self.footer.set_edit_text("")
 
-            self.print_text(text, "pending_text")
-            self.sender.send(text)
+            p = re.compile(ur'^name:(.+)')
+            match = re.search(p, text)
+            if(match != None):
+                name = match.group(1).strip()
+                self.sender.user_id = name
+                self.print_text("Changed your name to: " + name, "warning_text")
+            else:
+                self.print_text(text, "pending_text")
+                self.sender.send(text)
 
 
 
