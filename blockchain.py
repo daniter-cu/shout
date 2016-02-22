@@ -68,8 +68,10 @@ class Blockchain:
         else:
             self.items.extend(chain)
 
-
-
+    def __str__(self):
+        chain =  "~".join([item.to_json() for item in self.items])
+        chain += "->" + self.proposedBlock.to_json()
+        return chain
 
 
 

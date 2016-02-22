@@ -52,10 +52,12 @@ class Rec():
                         self.blockchain.propose_block(block)    
             if obj["block_type"] == BlockType.query:
                 # This is the catch up being requested
-                self.sender.sendQueryResult(self.blockchain.query(obj["payload"]["hash"], obj["payload"]["count"]))
+                pass
+                #self.sender.sendQueryResult(self.blockchain.query(obj["payload"]["hash"], obj["payload"]["count"]))
 
             if obj["block_type"] == BlockType.query_res:
-                self.blockchain.update(obj["payload"])
+                pass
+                #self.blockchain.update(obj["payload"])
 
         self.test_consensus()
 
