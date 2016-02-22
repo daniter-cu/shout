@@ -25,21 +25,28 @@ class Sender():
 
 
 
-    def send(self, msg):
-        # print "Trying to send message: ", msg
-        last_hash = ""
-        if not self.blockchain.is_empty():
-            last_hash = self.blockchain.peek().hash()
+    # def send(self, msg):
+    #     # print "Trying to send message: ", msg
+    #     last_hash = ""
+    #     if not self.blockchain.is_empty():
+    #         last_hash = self.blockchain.peek().hash()
 
-        block = Block(BlockType.message, self.user_id, last_hash, msg)
+    #     block = Block(BlockType.message, self.user_id, last_hash, msg)
+    #     self.blockchain.propose_block(block)
+
+    #     json = block.to_json()
+    #     logger.info("Sending: "+ json)
+    #     self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+    #     t = threading.Timer(self.resend_timeout, self.resend, [msg, block.hash()])
+    #     t.setDaemon(True)
+    #     t.start()
+
+    def send(self, block):
         self.blockchain.propose_block(block)
-
         json = block.to_json()
         logger.info("Sending: "+ json)
         self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
-        t = threading.Timer(self.resend_timeout, self.resend, [msg, block.hash()])
-        t.setDaemon(True)
-        t.start()
+
 
     def resend(self, message, hash):
         if self.blockchain.contains(hash):
