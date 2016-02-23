@@ -2,6 +2,7 @@ import time
 import logging 
 from block import *
 from block_type import *
+import random
 
 logger = logging.getLogger()
 
@@ -30,7 +31,7 @@ class MessageQueue():
 					block = Block(BlockType.message, self.user_id, last_hash, msg)
 					logger.info("sending!")
 					self.sender.send(block)
-					time.sleep(1)
+					time.sleep(1+ random.random())
 					if self.blockchain.contains(block.hash()):
 						break
 			else: # we have a message we want to send but htere is a proposal pending
