@@ -3,6 +3,7 @@ import logging
 from block import *
 from block_type import *
 import random
+from config import *
 
 logger = logging.getLogger()
 
@@ -21,7 +22,7 @@ class MessageQueue():
 			logger.info("started")
 			if not self.queue:
 				logger.info("no messages")
-				time.sleep(1)
+				time.sleep(EMPTY_QUEUE_TIMEOUT)
 			elif self.blockchain.proposal_allowed():
 				logger.info("trying to send")
 				msg = self.queue.pop(0)
@@ -31,12 +32,12 @@ class MessageQueue():
 					block = Block(BlockType.message, self.user_id, last_hash, msg)
 					logger.info("sending!")
 					self.sender.send(block)
-					time.sleep(1+ random.random())
+					time.sleep(RESEND_TIMEOUT + random.random() * RESEND_RANDOM_FACTOR)
 					if self.blockchain.contains(block.hash()):
 						break
 			else: # we have a message we want to send but htere is a proposal pending
 				logger.info("not allowed")
-				time.sleep(0.5)
+				time.sleep(PROPOSAL_PENDING_TIMEOUT)
 
 
 

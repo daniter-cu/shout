@@ -68,30 +68,3 @@ if __name__ == '__main__':
 
     client.start()
 
-    # while(True):
-    #     senderInput = stdin.readline()
-    #
-    #
-    #     # ToDo: I'd like to pull this directly from the BroadcastType object
-    #     blockTypes = "|".join(("msg:", "ping:", "room:", "name:", "help"))
-    #
-    #     p = re.compile("^({0})".format(blockTypes))
-    #     match = re.search(p, senderInput)
-    #
-    #     action = BlockType.message
-    #     if(match != None):
-    #         action = match.group(0)
-    #
-    #     if action == BlockType.message:
-    #         send_message(sender, senderInput)
-    #     elif action == BlockType.ping:
-    #         sender.send(BlockType.ping)
-    #     elif action == BlockType.renameChat:
-    #         rename_chat(sender, senderInput)
-    #     elif action == BlockType.renameUser:
-    #         rename_user(sender, senderInput)
-    #     elif action == BlockType.help:
-    #         display_help()
-    #     else:
-    #         send_message(sender, senderInput)
-

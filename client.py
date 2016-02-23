@@ -170,10 +170,6 @@ class ClientWindow(object):
                 self.print_text(text, "pending_text")
                 self.msgq.add_message(text)
 
-
-
-
-
         elif key == "up":
 
             w = self.generic_output_walker

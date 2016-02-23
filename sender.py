@@ -19,41 +19,14 @@ class Sender():
                                   socket.SOCK_DGRAM)  # UDP
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        self.heartbeat_interval = 1
-        self.resend_timeout = 2
+        self.heartbeat_interval = config.HEARTBEAT_INTERVAL
         self.heartbeat()
-
-
-
-    # def send(self, msg):
-    #     # print "Trying to send message: ", msg
-    #     last_hash = ""
-    #     if not self.blockchain.is_empty():
-    #         last_hash = self.blockchain.peek().hash()
-
-    #     block = Block(BlockType.message, self.user_id, last_hash, msg)
-    #     self.blockchain.propose_block(block)
-
-    #     json = block.to_json()
-    #     logger.info("Sending: "+ json)
-    #     self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
-    #     t = threading.Timer(self.resend_timeout, self.resend, [msg, block.hash()])
-    #     t.setDaemon(True)
-    #     t.start()
 
     def send(self, block):
         self.blockchain.propose_block(block)
         json = block.to_json()
         logger.info("Sending: "+ json)
         self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
-
-
-    def resend(self, message, hash):
-        if self.blockchain.contains(hash):
-            logger.info("#### Not resending")
-            return
-        time.sleep(random.random())
-        self.send(message)
 
     def heartbeat(self):
         last_block = self.blockchain.peek()

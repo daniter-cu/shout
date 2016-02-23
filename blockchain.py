@@ -3,6 +3,7 @@ import logging
 import threading
 from block_type import *
 from block      import *
+from config import *
 
 logger = logging.getLogger()
 
@@ -11,7 +12,7 @@ class Blockchain:
         self.items = []
         self.proposedBlock = None
         self.timestamp = time()
-        self.proposed_timeout = 2
+        self.proposed_timeout = PROPOSAL_TIMEOUT
 
         # push an empty block so the blockchain is never empty
         self.__push(Block(BlockType.empty, "", "", ""))
