@@ -42,8 +42,8 @@ class Sender():
         t.setDaemon(True)
         t.start()
 
-    def sendQuery(self, hash, count):
-        payload = {"hash": hash, "count":count}
+    def sendQuery(self, _hash, count):
+        payload = {"hash": _hash, "count":count}
         block = Block(BlockType.query, self.user_id, None, payload)
         json = block.to_json()
         self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
