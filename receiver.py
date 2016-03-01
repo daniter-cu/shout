@@ -47,7 +47,7 @@ class Rec():
                     if not self.blockchain.is_empty():
                         last_hash = self.blockchain.peek().hash()
 
-                    if not last_hash or last_hash == obj["prior_hash"]:
+                    if not last_hash or last_hash == obj["prior_hash"] or obj["prior_hash"] == "":
                         block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"])
                         self.blockchain.propose_block(block)    
             if obj["block_type"] == BlockType.query:
@@ -65,10 +65,10 @@ class Rec():
         #TODO : purge peers
         self.peers_list.purge_peers()
         prev_block = self.blockchain.peek()
-        if prev_block:
-            prev_hash = prev_block.hash()
+        if prev_block.block_type == BlockType.empty:
+             prev_hash = None
         else:
-            prev_hash = None
+            prev_hash = prev_block.hash()
         block = self.peers_list.get_consensus(prev_hash)
         if block:
             self.blockchain.accept_proposed_block(block)

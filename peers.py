@@ -40,7 +40,7 @@ class Peers():
                 block = full_set[h]
                 if block.hash() == current_hash:
                     return None
-                if block.prior_hash == current_hash or current_hash == None:
+                if block.prior_hash == current_hash or current_hash == None or block.prior_hash == "":
                     return block
                 else:
                     self.sender.sendQuery(current_hash, 1)
