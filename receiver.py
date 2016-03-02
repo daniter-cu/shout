@@ -13,6 +13,9 @@ class Rec():
         self.peers_list = peers_list
         self.user_id = user_id
         self.blockchain = blockchain
+
+        self.patchRequests = {}
+
         self.sender = sender
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -36,13 +39,13 @@ class Rec():
                     # TODO : put this into block class
                     pb = obj["proposed_block"]
                     block = Block(pb["block_type"], pb["user_id"], pb["prior_hash"], pb["payload"])
-                    self.peers_list.add_peer(obj["user_id"], block)
+                    self.peers_list.add_peer(obj["user_id"], obj["prior_hash"], block)
                 else: # this is the vanilla heartbeat case
-                    self.peers_list.add_peer(obj["user_id"])
+                    self.peers_list.add_peer(obj["user_id"], obj["prior_hash"])
             if obj["block_type"] == BlockType.message and obj["user_id"] != self.user_id :
                 # TODO : Don't over write if you're waiting for a message to get accepted
                 if self.blockchain.proposal_allowed():
-                    logger.info("%s - Recieved MESSAGE: %s" % (self.user_id, data))
+                    logger.info("%s - Received MESSAGE: %s" % (self.user_id, data))
                     last_hash = None
                     if not self.blockchain.is_empty():
                         last_hash = self.blockchain.peek().hash()
@@ -50,29 +53,34 @@ class Rec():
                     if not last_hash or last_hash == obj["prior_hash"] or obj["prior_hash"] == "":
                         block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"])
                         self.blockchain.propose_block(block)    
-            if obj["block_type"] == BlockType.historyRequest:
-                # Someone is requesting the history
-                self.sender.send_history(obj["payload"]["hash"], obj["payload"]["count"])
+            if obj["block_type"] == BlockType.requestHistory:
+                # Someone is requesting the history so be a nice person and send it
+                self.sender.send_history(obj["payload"]["hash"])
 
             if obj["block_type"] == BlockType.sendHistory:
-                pass
-                #self.blockchain.update(obj["payload"])
+                # Some nice person sent a history of the blockchain
+                block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"])
+                if block.hash() in self.patchRequests:
+                    del self.patchRequests[block.hash()]
+                    self.blockchain.patch(block)
 
-        self.test_consensus()
+        self.run_consensus()
+        self.client.update()
+        self.repair()
 
-    def test_consensus(self):
+    def run_consensus(self):
         self.peers_list.purge_peers()
 
-        block = self.peers_list.get_consensus()
+        (last_hash, block) = self.peers_list.get_consensus()
+        self.blockchain.verify_last_hash(last_hash)
 
         if block:
+            # Always accept the group consensus
+            self.blockchain.accept_proposed_block(block)
 
-            self.blockchain.accept_proposed_block(block) # We always accept the group consensus
-
-
-
-            # if self.blockchain.size() != (size + 1): # Must have started a new block
-            #     self.sender.sendQuery(block)
-
-            self.client.print_text(block.creator_id + ":" + block.payload)
-            logger.info("ACCEPT:" + self.user_id + " accepts block " + block.payload)
+    def repair(self):
+        for nsync in self.blockchain.get_all_nsyncs():
+            _hash = nsync.hash()
+            self.patchRequests[_hash] = self.patchRequests[_hash] + 1 if _hash in self.patchRequests else 1
+            if self.patchRequests[_hash] < 5: # Limit number of times you can request a block
+                self.sender.request_history(_hash)

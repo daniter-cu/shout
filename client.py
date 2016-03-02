@@ -6,6 +6,7 @@ import extends
 import re
 from extends import *
 from urwid import MetaSignals
+from block_type import BlockType
 
 class ClientWindow(object):
 
@@ -39,11 +40,13 @@ class ClientWindow(object):
             _palette.append((type + name, color, bg))
 
 
-    def __init__(self, block_chain, peers, msgq):
+    def __init__(self, blockchain, peers, msgq):
         self.shall_quit = False
-        self.block_chain = block_chain
+        self.blockchain = blockchain
         self.peers = peers
         self.msgq = msgq
+
+        self.texts = ["empty"]
 
 
     def start(self):
@@ -180,7 +183,7 @@ class ClientWindow(object):
             # self.body.keypress(size, key)
 
         elif key == "ctrl b":
-            self.print_text(str(self.block_chain), "confirmed_text")
+            self.print_text(str(self.blockchain), "confirmed_text")
 
         elif key == "ctrl p":
             self.print_text(str(self.peers), "confirmed_text")
@@ -228,10 +231,37 @@ class ClientWindow(object):
         if text and text[-1] == "\n":
             text = text[:-1]
 
-        walker.append(urwid.Text((format, text)))
+        text_obj = urwid.Text((format, text))
+        walker.append(text_obj)
 
         walker.set_focus(len(walker) - 1)
         self.draw_interface()
+        return text_obj
+
+    def update(self):
+
+        for index, block in enumerate(self.blockchain.items):
+            type = block.block_type
+
+            if type != BlockType.empty:
+
+                format = "confirmed_text"
+                text = block.creator_id + ": " + block.payload
+                if type == BlockType.nSync:
+                    format = "pending_text"
+                    text = "Missing blocks..."
+
+                if index < len(self.texts):
+                    handle = self.texts[index]
+                    if handle.text != text:
+                        handle.set_text((format, text))
+                        self.draw_interface()
+                else:
+                    self.texts.append(self.print_text(text, format))
+
+
+
+
 
 # Signal handlers
 

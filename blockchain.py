@@ -34,14 +34,33 @@ class Blockchain:
         # Note that you might be compelled to just use the self.proposedBlock
         # but this is not always the correct block
 
-        prev = self.peek()
-        if block.hash() != prev.hash(): # Out of sync, push an NSYNC block
-            nsync_block = NSyncBlock(block.prior_hash, prev.hash)
-            self.__push(nsync_block)
+        top_hash = self.peek().hash()
+        if block.prior_hash == top_hash:
+            self.__push(block)
+            logger.info("ACCEPT:" + block.creator_id + " accepts block " + block.payload)
+        elif not self.contains(block.hash()):
+            # We missed something... push an NSync block
+            self.__push(NSyncBlock(block.prior_hash, top_hash))
+            self.__push(block)
+            logger.info("ACCEPT (with nsync):" + block.creator_id + " accepts block " + block.payload)
 
-        self.__push(block)
         self.clear_proposed()
 
+    def verify_last_hash(self, last_hash):
+        # TODO: contains might be too strong...
+        if last_hash is not None and not self.contains(last_hash):
+            # We missed something... push an NSync block
+            self.__push(NSyncBlock(last_hash, self.peek().hash()))
+
+    def patch(self, block):
+        nsync = self.get_by_hash(block.hash())
+        if nsync is not None and nsync.block_type == BlockType.nSync:
+            index = self.items.index(nsync)
+            nsync._hash = block.prior_hash
+            if nsync.hash() == nsync.prior_hash: # We have all the missing pieces
+                self.items[index] = block
+            else:
+                self.items.insert(index + 1, block)
 
     def is_next_block_proposed(self):
         return self.proposedBlock is not None
@@ -69,19 +88,6 @@ class Blockchain:
 
         return None
 
-    # def query(self, hash, count):
-    #     index = None
-    #     for i, item in enumerate(self.items):
-    #         if item.hash() == hash:
-    #             index = i
-    #             break
-    #     if index == None:
-    #         return None
-    #     else:
-    #         if count > 0:
-    #             return self.items[i, i+count]
-    #         else:
-    #             return self.items[i+count, i]
 
     def update(self, chain):
         if chain[0].prior_hash != self.items.peek().hash:
@@ -90,18 +96,22 @@ class Blockchain:
             self.items.extend(chain)
 
     def __str__(self):
-        chain =  "~".join([item.to_json() for item in self.items])
+        chain = "~".join([item.to_json() for item in self.items])
         if self.proposedBlock:
             chain += "->" + self.proposedBlock.to_json()
         return chain
 
     def contains(self, hash):
+        return self.get_by_hash(hash) is not None
+
+    def get_by_hash(self, hash):
         for item in self.items:
             if hash == item.hash():
-                return True
-        return False
+                return item
+        return None
 
-
+    def get_all_nsyncs(self):
+        return filter(lambda b: b.block_type == BlockType.nSync, self.items)
 
 
 

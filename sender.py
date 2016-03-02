@@ -35,18 +35,16 @@ class Sender():
         t.setDaemon(True)
         t.start()
 
-    def request_history(self, _hash):
-        payload = {"hash": _hash, "count": 10}
-        block = Block(BlockType.requestHistory, self.user_id, None, payload)
+    def request_history(self, request_hash):
+        payload = {"hash": request_hash}
+        block = Block(BlockType.requestHistory, self.user_id, "", payload)
         self.__send(block.to_json())
 
-    def send_history(self, hash, count):
-
-        blocks = self.blockchain.getHistory(hash, count)
-        if blocks is not None:
-            _json = map(lambda b: b.to_json, blocks)
-            block = Block(BlockType.sendHistory, self.user_id, None, _json)
-            self.__send(block.to_json())
+    def send_history(self, request_hash):
+        block = self.blockchain.get_by_hash(request_hash)
+        if block and block.block_type != BlockType.nSync:
+            h_block = Block(BlockType.sendHistory, block.creator_id, block.prior_hash, block.payload)
+            self.__send(h_block.to_json())
 
     def __send(self, data):
         logger.info("Sending: " + data)
