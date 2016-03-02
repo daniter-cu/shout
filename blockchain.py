@@ -4,12 +4,12 @@ import threading
 from block_type import *
 from block      import *
 from config import *
+from nsync_block import NSyncBlock
 
 logger = logging.getLogger()
 
 class Blockchain:
     def __init__(self):
-        self.history = []
         self.items = []
         self.proposedBlock = None
         self.timestamp = time()
@@ -34,11 +34,12 @@ class Blockchain:
         # Note that you might be compelled to just use the self.proposedBlock
         # but this is not always the correct block
 
-        if block.hash() == self.peek().hash(): # Synced correctly
-            self.__push(block)
-        else:                                  # Out of sync. Create a new block chain
-            self.history.push(self.items)
-            self.items = [block]
+        prev = self.peek()
+        if block.hash() != prev.hash(): # Out of sync, push an NSYNC block
+            nsync_block = NSyncBlock(block.prior_hash, prev.hash)
+            self.__push(nsync_block)
+
+        self.__push(block)
         self.clear_proposed()
 
 
