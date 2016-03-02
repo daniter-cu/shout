@@ -6,11 +6,17 @@ from heartbeat import *
 import threading
 import logging
 
+import time
+import random
+from subprocess import call
+
 
 logger = logging.getLogger()
 
 class Sender():
-    def __init__(self, user_id, blockchain):
+    def __init__(self, user_id, blockchain, restart_func):
+        self.connected = True
+        self.restart_func = restart_func
         self.user_id = user_id
         self.blockchain = blockchain
         self.sock = socket.socket(socket.AF_INET,  # Internet
@@ -24,11 +30,11 @@ class Sender():
         self.blockchain.propose_block(block)
         self.__send(block.to_json())
 
+
     def heartbeat(self):
         last_block = self.blockchain.peek()
         proposed_block = self.blockchain.proposedBlock
         heartbeat = Heartbeat(self.user_id, last_block, proposed_block)
-
         self.__send(heartbeat.to_json())
 
         t = threading.Timer(self.heartbeat_interval, self.heartbeat)
@@ -47,5 +53,15 @@ class Sender():
             self.__send(h_block.to_json())
 
     def __send(self, data):
-        logger.info("Sending: " + data)
-        self.sock.sendto(data, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+        try:
+            logger.info("Sending: " + data)
+            self.sock.sendto(data, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+            if not self.connected:
+                self.connected = True
+                t = threading.Thread(target=self.restart_func)
+                t.setDaemon(True)
+                t.start()
+        except:
+            self.connected = False
+            call(['pkill', 'tcpdump'])
+

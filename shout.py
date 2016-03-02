@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     blockchain = Blockchain()
 
-    sender = Sender(user_id, blockchain)
+    sender = Sender(user_id, blockchain, start_permisc_mode)
     peers_list = Peers(sender)
     msgq = MessageQueue(blockchain, sender, user_id)
     client = ClientWindow(blockchain, peers_list, msgq)

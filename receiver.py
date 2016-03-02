@@ -1,4 +1,4 @@
-import socket
+import socket, sys
 import config
 import json
 from block import *
@@ -18,18 +18,18 @@ class Rec():
 
         self.sender = sender
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        #self.sock.settimeout(2)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-        self.sock.bind(
-            ('', config.UDP_PORT)
-        )
+        self.sock.bind(('', config.UDP_PORT))
 
     def get_message(self):
         try:
             data, address = self.sock.recvfrom(1024) # buffer size is 1024 bytes TODO : make this bigger?
             obj = json.loads(data)
-
-        except:
+        except :
+            e = sys.exc_info()[0]
+            logger.info(e)
             return
         
         if "user_id" in obj :
