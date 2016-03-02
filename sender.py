@@ -1,13 +1,11 @@
 import socket
 import config
-import json
 from block import *
 from block_type import *
 from heartbeat import *
 import threading
 import logging
-import time
-import random
+
 
 logger = logging.getLogger()
 
@@ -24,31 +22,32 @@ class Sender():
 
     def send(self, block):
         self.blockchain.propose_block(block)
-        json = block.to_json()
-        logger.info("Sending: "+ json)
-        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+        self.__send(block.to_json())
 
     def heartbeat(self):
         last_block = self.blockchain.peek()
         proposed_block = self.blockchain.proposedBlock
         heartbeat = Heartbeat(self.user_id, last_block, proposed_block)
 
-        json = heartbeat.to_json()
-        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+        self.__send(heartbeat.to_json())
 
-        # TODO : Since we never join on these what happens to the object?
-        # Is there a memory leak here?
         t = threading.Timer(self.heartbeat_interval, self.heartbeat)
         t.setDaemon(True)
         t.start()
 
-    def sendQuery(self, _hash, count):
-        payload = {"hash": _hash, "count":count}
-        block = Block(BlockType.query, self.user_id, None, payload)
-        json = block.to_json()
-        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+    def request_history(self, _hash):
+        payload = {"hash": _hash, "count": 10}
+        block = Block(BlockType.requestHistory, self.user_id, None, payload)
+        self.__send(block.to_json())
 
-    def sendQueryResult(self, res):
-        block = Block(BlockType.query_res, self.user_id, None, res)
-        json = block.to_json()
-        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+    def send_history(self, hash, count):
+
+        blocks = self.blockchain.getHistory(hash, count)
+        if blocks is not None:
+            _json = map(lambda b: b.to_json, blocks)
+            block = Block(BlockType.sendHistory, self.user_id, None, _json)
+            self.__send(block.to_json())
+
+    def __send(self, data):
+        logger.info("Sending: " + data)
+        self.sock.sendto(data, (config.UDP_BROADCAST_IP, config.UDP_PORT))

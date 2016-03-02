@@ -23,7 +23,7 @@ class Peers():
     def size(self):
         return len(self.peers)
 
-    def get_consensus(self, current_hash):
+    def get_consensus(self):
         c = {}
         full_set = {}
         for peer, (_, block) in self.peers.items():
@@ -31,19 +31,13 @@ class Peers():
                 h = block.hash()
                 full_set[h] = block
                 if h in c:
-                    c[h]+=1
+                    c[h] += 1
                 else:
-                    c[h]=1
+                    c[h] = 1
 
         for h, count in c.items():
             if count > self.size()/2:
                 block = full_set[h]
-                if block.hash() == current_hash:
-                    return None
-                if block.prior_hash == current_hash or current_hash == None or block.prior_hash == "":
-                    return block
-                else:
-                    self.sender.sendQuery(current_hash, 1)
+                return block
 
         return None
-

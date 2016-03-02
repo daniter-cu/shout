@@ -50,28 +50,29 @@ class Rec():
                     if not last_hash or last_hash == obj["prior_hash"] or obj["prior_hash"] == "":
                         block = Block(BlockType.message, obj["user_id"], obj["prior_hash"], obj["payload"])
                         self.blockchain.propose_block(block)    
-            if obj["block_type"] == BlockType.query:
-                # This is the catch up being requested
-                pass
-                #self.sender.sendQueryResult(self.blockchain.query(obj["payload"]["hash"], obj["payload"]["count"]))
+            if obj["block_type"] == BlockType.historyRequest:
+                # Someone is requesting the history
+                self.sender.send_history(obj["payload"]["hash"], obj["payload"]["count"])
 
-            if obj["block_type"] == BlockType.query_res:
+            if obj["block_type"] == BlockType.sendHistory:
                 pass
                 #self.blockchain.update(obj["payload"])
 
         self.test_consensus()
 
     def test_consensus(self):
-        #TODO : purge peers
         self.peers_list.purge_peers()
-        prev_block = self.blockchain.peek()
-        if prev_block.block_type == BlockType.empty:
-             prev_hash = None
-        else:
-            prev_hash = prev_block.hash()
-        block = self.peers_list.get_consensus(prev_hash)
-        if block:
-            self.blockchain.accept_proposed_block(block)
-            self.client.print_text(block.creator_id + ":" + block.payload)
-            logger.info("ACCEPT!!!!!!" + self.user_id + " accepts block " + block.payload)
 
+        block = self.peers_list.get_consensus()
+
+        if block:
+
+            self.blockchain.accept_proposed_block(block) # We always accept the group consensus
+
+
+
+            # if self.blockchain.size() != (size + 1): # Must have started a new block
+            #     self.sender.sendQuery(block)
+
+            self.client.print_text(block.creator_id + ":" + block.payload)
+            logger.info("ACCEPT:" + self.user_id + " accepts block " + block.payload)

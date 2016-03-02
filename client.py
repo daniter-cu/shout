@@ -167,7 +167,7 @@ class ClientWindow(object):
                 self.msgq.user_id = name
                 self.print_text("Changed your name to: " + name, "warning_text")
             else:
-                self.print_text(text, "pending_text")
+                # self.print_text(text, "pending_text")
                 self.msgq.add_message(text)
 
         elif key == "up":

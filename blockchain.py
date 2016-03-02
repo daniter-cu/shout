@@ -9,6 +9,7 @@ logger = logging.getLogger()
 
 class Blockchain:
     def __init__(self):
+        self.history = []
         self.items = []
         self.proposedBlock = None
         self.timestamp = time()
@@ -32,9 +33,14 @@ class Blockchain:
     def accept_proposed_block(self, block):
         # Note that you might be compelled to just use the self.proposedBlock
         # but this is not always the correct block
-        self.__push(block)
 
-        #self.proposedBlock = None
+        if block.hash() == self.peek().hash(): # Synced correctly
+            self.__push(block)
+        else:                                  # Out of sync. Create a new block chain
+            self.history.push(self.items)
+            self.items = [block]
+        self.clear_proposed()
+
 
     def is_next_block_proposed(self):
         return self.proposedBlock is not None
@@ -54,19 +60,27 @@ class Blockchain:
     def size(self):
         return len(self.items)
 
-    def query(self, hash, count):
-        index = None
-        for i, item in enumerate(self.items):
-            if item.hash() == hash:
-                index = i
-                break
-        if index == None:
-            return None
-        else:
-            if count > 0:
-                return self.items[i, i+count]
-            else:
-                return self.items[i+count, i]
+    def get_history(self, _hash, count):
+        hashes = map(lambda b: b.hash(), self.items)
+        if _hash in hashes:
+            index = hashes.index(_hash)
+            return self.items[index: -count]
+
+        return None
+
+    # def query(self, hash, count):
+    #     index = None
+    #     for i, item in enumerate(self.items):
+    #         if item.hash() == hash:
+    #             index = i
+    #             break
+    #     if index == None:
+    #         return None
+    #     else:
+    #         if count > 0:
+    #             return self.items[i, i+count]
+    #         else:
+    #             return self.items[i+count, i]
 
     def update(self, chain):
         if chain[0].prior_hash != self.items.peek().hash:
