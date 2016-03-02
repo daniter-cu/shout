@@ -8,11 +8,14 @@ import threading
 import logging
 import time
 import random
+from subprocess import call
 
 logger = logging.getLogger()
 
 class Sender():
-    def __init__(self, user_id, blockchain):
+    def __init__(self, user_id, blockchain, restart_func):
+        self.connected = True
+        self.restart_func = restart_func
         self.user_id = user_id
         self.blockchain = blockchain
         self.sock = socket.socket(socket.AF_INET,  # Internet
@@ -26,7 +29,7 @@ class Sender():
         self.blockchain.propose_block(block)
         json = block.to_json()
         logger.info("Sending: "+ json)
-        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+        self.__send(json)
 
     def heartbeat(self):
         last_block = self.blockchain.peek()
@@ -34,7 +37,7 @@ class Sender():
         heartbeat = Heartbeat(self.user_id, last_block, proposed_block)
 
         json = heartbeat.to_json()
-        self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+        self.__send(json)
 
         # TODO : Since we never join on these what happens to the object?
         # Is there a memory leak here?
@@ -52,3 +55,18 @@ class Sender():
         block = Block(BlockType.query_res, self.user_id, None, res)
         json = block.to_json()
         self.sock.sendto(json, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+
+    def __send(self, data):
+        try:
+            self.sock.sendto(data, (config.UDP_BROADCAST_IP, config.UDP_PORT))
+            if not self.connected:
+                self.connected = True
+                t = threading.Thread(target=self.restart_func)
+                t.setDaemon(True)
+                t.start()
+        except:
+            self.connected = False
+            call(['pkill', 'tcpdump'])
+
+
+
