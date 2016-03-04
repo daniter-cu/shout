@@ -44,8 +44,6 @@ class Blockchain:
             self.__push(block)
             logger.info("ACCEPT (with nsync):" + block.creator_id + " accepts block " + block.payload)
 
-        self.clear_proposed()
-
     def verify_last_hash(self, last_hash):
         # TODO: contains might be too strong...
         if last_hash is not None and not self.contains(last_hash):
