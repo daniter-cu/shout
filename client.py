@@ -19,8 +19,8 @@ class ClientWindow(object):
             ('bold_text', 'light gray', 'default', 'bold'),
             ('warning_text', '', '', '', '#e1d', '#fff'),
             ('pending_text', '', '', '', '#bbb', '#fff'),
-            ('confirmed_text', '', '', '', '#1df', '#fff'),
-            ("body", "text"),
+            ('confirmed_text', '', '', '', '#2c5', '#fff'),
+            ("body", '', '', '', '#f00', '#fff'),
             ("footer", "text"),
             ("header", "text"),
         ]
