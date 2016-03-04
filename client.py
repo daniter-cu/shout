@@ -250,6 +250,8 @@ class ClientWindow(object):
                 if type == BlockType.nSync:
                     format = "pending_text"
                     text = "Missing blocks..."
+                    if block.blocksRequested == block.maxRequests:
+                        text = "Older chats omitted."
 
                 if index < len(self.texts):
                     handle = self.texts[index]

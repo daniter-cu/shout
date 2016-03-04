@@ -55,6 +55,7 @@ class Blockchain:
         if nsync is not None and nsync.block_type == BlockType.nSync:
             index = self.items.index(nsync)
             nsync._hash = block.prior_hash
+            nsync.blocksRequested += 1
             if nsync.hash() == nsync.prior_hash: # We have all the missing pieces
                 self.items[index] = block
             else:

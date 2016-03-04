@@ -34,8 +34,7 @@ class Peers():
                 block_set[_hash] = block
                 block_count[_hash] = block_count[_hash] + 1 if _hash in block_count else 1
 
-            # I think you are already counting yourself above
-            #hash_count[last_hash] = hash_count[last_hash] + 1 if last_hash in hash_count else 1
+            hash_count[last_hash] = hash_count[last_hash] + 1 if last_hash in hash_count else 1
 
         last_hash = None
         block = None

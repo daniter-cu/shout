@@ -30,12 +30,12 @@ class MessageQueue():
                     #     last_hash = ""
                     block = Block(BlockType.message, self.user_id, last_hash, msg)
                     if self.blockchain.proposal_allowed():
-	                    self.sender.send(block)
-	                    time.sleep(RESEND_TIMEOUT + (random.random() * RESEND_RANDOM_FACTOR))
-	                    if self.blockchain.contains(block.hash()):
-	                        break
-	                else:
-	                	time.sleep(RESEND_TIMEOUT)
+                        self.sender.send(block)
+                        time.sleep(RESEND_TIMEOUT + (random.random() * RESEND_RANDOM_FACTOR))
+                        if self.blockchain.contains(block.hash()):
+                            break
+                    else:
+                        time.sleep(RESEND_TIMEOUT)
             else:  # we have a message we want to send but htere is a proposal pending
                 logger.info("not allowed")
                 time.sleep(PROPOSAL_PENDING_TIMEOUT)

@@ -82,5 +82,6 @@ class Rec():
         for nsync in self.blockchain.get_all_nsyncs():
             _hash = nsync.hash()
             self.patchRequests[_hash] = self.patchRequests[_hash] + 1 if _hash in self.patchRequests else 1
-            if self.patchRequests[_hash] < 5: # Limit number of times you can request a block
+            # Limit number of times you can request a block
+            if self.patchRequests[_hash] < 5 and nsync.blocksRequested < nsync.maxRequests:
                 self.sender.request_history(_hash)
