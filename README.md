@@ -9,5 +9,5 @@ $ python shout.py
 
 ## Commands
 ```
-name: Dan
+name: Dan # Changes your chat name
 ```
