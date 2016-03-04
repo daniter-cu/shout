@@ -102,9 +102,9 @@ class Blockchain:
     def contains(self, hash):
         return self.get_by_hash(hash) is not None
 
-    def get_by_hash(self, hash):
+    def get_by_hash(self, _hash):
         for item in self.items:
-            if hash == item.hash():
+            if _hash == item.hash():
                 return item
         return None
 

@@ -30,19 +30,20 @@ class Peers():
         hash_count = {}
         for peer, (_, last_hash, block) in self.peers.items():
             if block:
-                hash = block.hash()
-                block_set[hash] = block
-                block_count[hash] = block_count[hash] + 1 if hash in block_count else 1
+                _hash = block.hash()
+                block_set[_hash] = block
+                block_count[_hash] = block_count[_hash] + 1 if _hash in block_count else 1
 
-            hash_count[last_hash] = hash_count[last_hash] + 1 if last_hash in hash_count else 1
+            # I think you are already counting yourself above
+            #hash_count[last_hash] = hash_count[last_hash] + 1 if last_hash in hash_count else 1
 
         last_hash = None
         block = None
-        for hash, count in block_count.items():
+        for _hash, count in block_count.items():
             if count > self.size()/2:
-                block = block_set[hash]
-        for hash, count in hash_count.items():
+                block = block_set[_hash]
+        for _hash, count in hash_count.items():
             if count >= self.size()/2:  # I think we need to let ties win in this situation.
-                last_hash = hash
+                last_hash = _hash
 
         return last_hash, block
